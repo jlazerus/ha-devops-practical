@@ -1,0 +1,88 @@
+---
+# tasks file for docker-base
+- name: Install docker dependencies
+  yum:
+    name: ['lvm2', 'yum-utils']
+    state: installed
+  become: true
+  # with_items:
+  #   - lvm2
+  #   - yum-utils
+  #   - device-mapper-persistent-data
+  tags:
+    - docker_install
+
+- name: Add Docker repo
+  get_url:
+    url: "{{ docker_repo_url }}"
+    dest: "{{ local_docker_repo_file }}"
+  become: true
+  tags:
+    - docker_config
+
+- name: Enable Docker Channel
+  ini_file:
+    path: "{{ local_docker_repo_file }}"
+    section: 'docker-ce-stable'
+    option: enabled
+    value: "1"
+  become: true
+  tags:
+    - docker_config
+
+- name: Install Docker
+  yum:
+    name: "{{ docker_package_name }}"
+    state: installed
+  become: true
+  tags:
+    - docker_install
+
+- name: Install docker-compose
+  get_url:
+    url: "{{ docker_compose_url }}"
+    dest: "{{ docker_compose_local_file }}"
+    mode: '+x'
+  become: true
+  tags:
+    - docker_install
+
+# - name: Create Docker config directory
+#   file:
+#     state: directory
+#     path: "{{ docker_daemon_path }}"
+#     owner: 'root'
+#     group: 'root'
+#     mode: 0655
+#   become: true
+#   tags:
+#     - docker_config
+
+# - name: Configure Docker
+#   become: true
+#   template:
+#     src: docker_daemon_json.j2
+#     dest: "{{ docker_daemon_file }}"
+#   notify:
+#     - restart_docker
+#   tags:
+#     - docker_config
+
+- name: Start Docker service
+  service:
+    name: docker
+    state: started
+    enabled: true
+  become: true
+  tags:
+    - docker_install
+
+- name: Add users to docker group
+  user:
+    name: "{{ item }}"
+    groups: docker
+    append: true
+  become: true
+  with_items: "{{ docker_users }}"
+  tags:
+    - docker_config

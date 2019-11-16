@@ -1,0 +1,40 @@
+---
+
+- name: install-setup-packages
+  yum:
+    name: "{{ setup_packages }}"
+    state: present
+    update_cache: true
+
+# - include_tasks: aws.yml
+# - import_tasks: aws.yml
+
+# Install Java JDK/Apache Maven
+- name: install java
+  yum:
+    name: "https://d3pxv6yz143wms.cloudfront.net/8.212.04.2/java-1.8.0-amazon-corretto-devel-1.8.0_212.b04-2.x86_64.rpm"
+
+- name: install maven binaries
+  unarchive:
+    src: "http://www.apache.org/dist/maven/maven-3/3.6.1/binaries/apache-maven-3.6.1-bin.tar.gz"
+    dest: "/usr/local"
+    remote_src: true
+
+- name: remove old path configuration
+  tags:
+  - molecule-idempotence-notest
+  file:
+    path: /etc/profile.d/maven.sh
+    state: absent
+
+- name: maven path configuration
+  lineinfile:
+    dest: /etc/profile.d/maven.sh
+    line: '{{ item.line }}'
+    create: true
+    state: present
+  with_items:
+    - { line: 'M2_HOME=/usr/local/apache-maven-3.6.1' }
+    - { line: 'PATH=$PATH:$M2_HOME/bin' }
+
+- include_tasks: docker.yml

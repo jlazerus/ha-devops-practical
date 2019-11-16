@@ -1,0 +1,12 @@
+{
+    "data-root": "{{ docker_daemon_data_root }}",
+    "log-driver": "{{ docker_daemon_log_driver }}",
+    "log-opts": {
+        "max-file": "{{ docker_daemon_max_log_files }}",
+        "max-size": "{{ docker_daemon_max_log_size }}"
+    },
+    "storage-driver": "{{ docker_daemon_storage_driver }}",
+    "storage-opts": [
+        "{{ docker_daemon_storage_opts }}"
+    ]
+}

@@ -1,0 +1,28 @@
+---
+# defaults file for ha-devops-practical
+
+setup_packages:
+  - which
+  - unzip
+  - zip
+
+docker_package_name: 'docker-ce'
+docker_package_version: '19.03.5'
+docker_repo_url: 'https://download.docker.com/linux/centos/docker-ce.repo'
+local_docker_repo_file: '/etc/yum.repos.d/docker-ce.repo'
+docker_data_root: ""
+
+docker_users:
+  - root
+docker_daemon_path: '/etc/docker'
+docker_daemon_filename: 'daemon.json'
+docker_daemon_file: "{{ docker_daemon_path }}/{{ docker_daemon_filename }}"
+docker_daemon_storage_driver: 'overlay2'
+docker_daemon_storage_opts: "overlay2.override_kernel_check=true"
+docker_daemon_data_root: "{{ docker_data_root }}"
+docker_daemon_log_driver: 'json-file'
+docker_daemon_max_log_size: '1g'
+docker_daemon_max_log_files: '3'
+docker_compose_version: '1.24.0'
+docker_compose_url: "https://github.com/docker/compose/releases/download/{{ docker_compose_version }}/docker-compose-Linux-x86_64"
+docker_compose_local_file: "/bin/docker-compose"

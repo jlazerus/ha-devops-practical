@@ -1,0 +1,18 @@
+---
+- name: extract awscli archive
+  unarchive:
+    src: https://s3.amazonaws.com/aws-cli/awscli-bundle.zip
+    dest: /tmp/
+    remote_src: true
+  tags: aws
+
+- name: install aws cli
+  become: true
+  command: /tmp/awscli-bundle/install -i /usr/local/aws creates=/usr/bin/aws
+  tags: aws
+
+- name: clean up aws cli directory
+  file:
+    path: /tmp/awscli-bundle
+    state: absent
+  tags: aws
